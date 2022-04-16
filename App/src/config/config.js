@@ -12,7 +12,7 @@ const colors = {
   brandColor: '#fafafa',
   brandBg: '#010101',
   // brandBg:'#1A2B61',
-  pureWhite: '#fff',
+  pureWhite: '#E1E9EE',
   inputUnderLineColor: '#6A7085',
   placeHolder: '#1A2B61',
   hairLineColor: '#010101',
@@ -27,6 +27,8 @@ const colors = {
   calmRed: '#D2686E',
   info: '#c9aa88',
   calmGreen: 'green',
+  skeletonBg: '#262626',
+  skeletonAnimationBg: '#303030',
 };
 
 const {width, height} = Dimensions.get('screen');
@@ -34,7 +36,7 @@ const universalPadding = width / 10;
 const sMargin = 10;
 const inputBorder = 5;
 const menuIconSize = 30;
-const postHeight = height / 1.4;
+const postHeight = height / 1.7;
 
 const postSize = height / 1.5;
 const avatarWidth = width / 13;
@@ -61,5 +63,5 @@ export {
   brandFont,
   postSize,
   avatarWidth,
-  postHeight
+  postHeight,
 };

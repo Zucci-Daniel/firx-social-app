@@ -2,7 +2,7 @@ import React, {useState, useRef, useCallback, useMemo} from 'react';
 import {View, FlatList, StyleSheet, Text} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
-import {universalPadding, height} from '../config/config';
+import {universalPadding, height,colors} from '../config/config';
 import AppLoading from './AppLoading';
 import Post from './Post/Post';
 import AppCarousel from './AppCarousel';
@@ -82,7 +82,7 @@ const Feed = ({useData = [], userUID}) => {
           ListEmptyComponent={ListEmptyComponent}
         />
       ) : (
-        <AppLoading message="oops no post available" />
+        <AppLoading message="oops no post available" loop={false} />
       )}
       <BottomSheet
         enablePanDownToClose
@@ -91,7 +91,7 @@ const Feed = ({useData = [], userUID}) => {
         snapPoints={snapPoints}
         backgroundStyle={{backgroundColor: 'red'}}
         onChange={handleSheetChanges}>
-        <View style={{backgroundColor: 'black', flex: 1}}>
+        <View style={{backgroundColor: 'black', flex: 1,zIndex:100}}>
           <Text>Awesome 🎉</Text>
         </View>
       </BottomSheet>
@@ -106,7 +106,7 @@ const seperator = () => (
     style={{
       height: universalPadding / 3,
       width: '100%',
-      backgroundColor: 'white',
+      backgroundColor: colors.pureWhite,
     }}
   />
 );

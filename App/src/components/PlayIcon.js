@@ -5,18 +5,20 @@ import {width} from '../config/config';
 
 const PlayIcon = ({
   iconName = 'play',
-  size = 60,
-  color = 'red',
+  size = 30,
+  color = 'white',
   extraPlayStyles,
   onPress,
 }) => {
   return (
-    <TouchableNativeFeedback onPress={onPress} style={extraPlayStyles}>
+    <TouchableNativeFeedback
+      onPress={onPress}
+      style={[styles.shadow, extraPlayStyles]}>
       <Ionicons
         name={iconName}
         size={size}
         color={color}
-        style={[styles.icon, styles.shadow, extraPlayStyles]}
+        style={[styles.icon, extraPlayStyles]}
       />
     </TouchableNativeFeedback>
   );
@@ -25,8 +27,15 @@ const PlayIcon = ({
 export default PlayIcon;
 
 const styles = StyleSheet.create({
-  container: {
-    width: width,
-    margin: 0,
+  shadow: {
+    shadowColor: 'red',
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.53,
+    shadowRadius: 13.97,
+
+    elevation: 21,
   },
 });

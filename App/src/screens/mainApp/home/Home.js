@@ -6,8 +6,6 @@ import {
   useState,
 } from '../../../imports/all_RnComponents';
 
-import {ScrollView} from 'react-native';
-
 import {commonFunctions} from '../../../imports/all_files';
 import {
   universalPadding,
@@ -22,10 +20,8 @@ import {useGetNewUser} from '../../../hooks/useOperation.js';
 import {getFromLocalStorage} from '../../../hooks/useLocalStorageFunctions';
 import {SignUpInfoContext} from './../../forms/signUpInfoContext';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
 import {storeLocally} from './../../../hooks/useLocalStorageFunctions';
 import {log} from './../../../hooks/testLog';
-import AppLoading from './../../../components/AppLoading';
 // import {
 //   handleUnfollowAuthor,
 //   handleSavePost,
@@ -35,41 +31,19 @@ import AppLoading from './../../../components/AppLoading';
 // } from '../../../hooks/postOperations';
 import AppFloatMenu from '../../../components/AppFloatMenu';
 import Feed from './../../../components/Feed';
-import {toggleNetwork} from './../../../hooks/useOperation';
-import AppPostVideo from './../../../components/AppPostVideo';
+import FeedLoadingSkeleton from './../../../components/FeedLoadingSkeleton';
+import {checkNetworkStatus} from './../../../hooks/justHooks';
 
 const Home = ({navigation}) => {
-  const test = async () => {
-    try {
-      const response = await firestore()
-        .collection('STUDENTS')
-        .doc('yE8vmOWuJ6VJot7L7OwxtBNdgjs1')
-        .get();
-
-      if (response) {
-        console.log('got the file, ===> ', response);
-      } else {
-        console.log('just response, ===> ', response);
-      }
-    } catch (error) {
-      console.warn('error getin custom files => ', error.message);
-    }
-  };
-
-  useEffect(() => {
-    test();
-  }, []);
-
-  toggleNetwork();
-
+  const {subscribeToNetworkStatus} = checkNetworkStatus();
   const page = 'home';
-
+  let check = subscribeToNetworkStatus();
   const [allPosts, setAllPost] = useState([]);
   const [blackLists, setBlackLists] = useState({
     myPostsBlackList: [],
     myProfilesBlackList: [],
   });
-  const [isFetchingData, setIsFetchingData] = useState(!true); //use this state to show a loading animation.
+  const [isFetchingData, setIsFetchingData] = useState(true); //use this state to show a loading animation.
 
   const {userUID} = useContext(AppContext);
   const {setUser} = useContext(SignUpInfoContext);
@@ -87,7 +61,6 @@ const Home = ({navigation}) => {
           //prepare the data. because u don't want to store every user from the db to the local storage, we're basically taking what we want.
           const responseObj = {...response.data()};
 
-          // console.log(responseObj, ' response obj');
 
           const userBasicInfo = {
             birthdate: responseObj.birthdate,
@@ -102,7 +75,6 @@ const Home = ({navigation}) => {
             profileImage: responseObj.profileImage,
             phoneNumber: responseObj.phoneNumber,
           };
-          console.log(userBasicInfo.profileImage, ' my profile image');
           try {
             //store the basic info
             await storeLocally('currentUserBasicInfo', userBasicInfo);
@@ -153,74 +125,87 @@ const Home = ({navigation}) => {
     //set the global sign up info context to that currentUserObject u fetched.
   };
 
-  useEffect(() => {
-    console.log('getting current user specially');
-    getCurrentUserBasicInfo();
-  }, [false]);
 
-  console.log(allPosts, ' from hom');
-  // /RE WRITE THIS FUNCTION SO IT WONT GIVE ERROR
-  useEffect(() => {
-    //get the snapShot of his black listed posts from his doc
-    const subscriber = firestore()
-      .collection('STUDENTS')
-      .doc(userUID)
-      .onSnapshot(documentSnapshot => {
-        setBlackLists({
-          ...blackLists,
-          myPostsBlackList: documentSnapshot.data().postsBlackListed,
-          myProfilesBlackList: documentSnapshot.data().profilesBlackListed,
-        });
-        console.log(
-          documentSnapshot.data().profilesBlackListed,
-          ' blacklisted profiles',
-        );
-      });
-
-    return () => subscriber();
-  }, []);
-
-  useEffect(() => {
-    const baseUrl = firestore().collection('AllPosts');
-    const postCondition =
-      blackLists.myPostsBlackList.length > 0
-        ? baseUrl.where('postID', 'not-in', blackLists.myPostsBlackList)
-        : baseUrl;
-
-    //get the post.
-    //refactor this.
-    const subscriber = postCondition.onSnapshot(querySnapshot => {
-      const posts = [];
-
-      querySnapshot.forEach(documentSnapshot => {
-        //think about this again.
-        if (
-          blackLists.myProfilesBlackList
-            ? blackLists.myProfilesBlackList.includes(
-                documentSnapshot.data().posterUserUID,
-              ) == false
-            : true
-        ) {
-          posts.push({
-            ...documentSnapshot.data(),
+  const getBlackLists = () => {
+    try {
+      const subscriber = firestore()
+        .collection('STUDENTS')
+        .doc(userUID)
+        .onSnapshot(documentSnapshot => {
+          setBlackLists({
+            ...blackLists,
+            myPostsBlackList: documentSnapshot.data().postsBlackListed,
+            myProfilesBlackList: documentSnapshot.data().profilesBlackListed,
           });
-        } else {
-        }
-      });
+          console.log(
+            documentSnapshot.data().profilesBlackListed,
+            ' blacklisted profiles',
+          );
+          console.log(
+            documentSnapshot.data().postsBlackListed,
+            ' blacklisted posts',
+          );
+        });
 
-      setAllPost(posts);
+      return () => subscriber();
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
-      setIsFetchingData(false);
-    });
-
-    // Unsubscribe from events when no longer in use
-    return () => subscriber();
+  useEffect(() => {
+    getCurrentUserBasicInfo();
   }, []);
 
- 
-  if (isFetchingData) return <AppLoading message="getting feeds for you..." />;
+  useEffect(() => {
+    if(check) getBlackLists();
+    
+  }, [check]);
 
-  console.log(allPosts, ' the feeds');
+  useEffect(() => {
+
+    if(check){
+      const baseUrl = firestore().collection('AllPosts');
+      const postCondition =
+        blackLists.myPostsBlackList.length > 0
+          ? baseUrl.where('postID', 'not-in', blackLists.myPostsBlackList)
+          : baseUrl;
+  
+      //get the post.
+      //refactor this.
+      const subscriber = postCondition.onSnapshot(querySnapshot => {
+        const posts = [];
+  
+        querySnapshot.forEach(documentSnapshot => {
+          if (
+            blackLists.myProfilesBlackList
+              ? blackLists.myProfilesBlackList.includes(
+                  documentSnapshot.data().posterUserUID,
+                ) == false
+              : true
+          ) {
+            posts.push({
+              ...documentSnapshot.data(),
+            });
+          } else {
+          }
+        });
+  
+        setAllPost(posts);
+  
+        setIsFetchingData(false);
+      });
+  
+      // Unsubscribe from events when no longer in use
+      return () => subscriber();
+
+    }else{
+      console.log("mobile data is turned off")
+    }
+
+  }, [check]);
+
+  if (isFetchingData) return <FeedLoadingSkeleton />;
 
   return (
     <>

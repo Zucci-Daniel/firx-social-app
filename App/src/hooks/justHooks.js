@@ -5,7 +5,10 @@ export const checkNetworkStatus = () => {
   const netInfo = useNetInfo();
 
   let subscribeToNetworkStats = netInfo.isInternetReachable;
-  console.log(subscribeToNetworkStats, ' netwokr directly from the hook');
+
+  const subscribeToNetworkStatus = ()=>netInfo.isInternetReachable?true:false;
+
+  console.log(subscribeToNetworkStats, ' network directly from the hook');
   const networkStatus = () => {
     return commonFunctions.showToast(
       'hi',
@@ -13,5 +16,5 @@ export const checkNetworkStatus = () => {
       `${netInfo.isInternetReachable ? `success` : `alert`}`,
     );
   };
-  return {networkStatus, subscribeToNetworkStats};
+  return {networkStatus, subscribeToNetworkStats,subscribeToNetworkStatus};
 };
