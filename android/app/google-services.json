@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "774305723429",
+    "project_id": "fx-database-88fb5",
+    "storage_bucket": "fx-database-88fb5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:774305723429:android:9170fad33face988537bcc",
+        "android_client_info": {
+          "package_name": "com.firx"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "774305723429-0o8psgifdf3kfm633pufu6gk2pdo94of.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.firx",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "774305723429-cosvkmsmlelu1ku6rir6drhiddmko9ou.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1b-KxZjmGBr9tHq6xaVZ2uanTTTMbNdM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "774305723429-cosvkmsmlelu1ku6rir6drhiddmko9ou.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

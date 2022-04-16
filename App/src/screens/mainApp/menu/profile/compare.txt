@@ -1,0 +1,14 @@
+const handleUpdate = () => {
+    console.log('just clicked', didUpdateBasicInfo);
+    setUser(previousInfo => {
+      if (JSON.stringify(user) === JSON.stringify(updatedInfo)) {
+        setDidUpdateBasicInfo(false);
+        return previousInfo;
+      } else {
+        setDidUpdateBasicInfo(true);
+        return updatedInfo;
+      }
+    });
+
+    // return navigation.goBack(1);
+  };
